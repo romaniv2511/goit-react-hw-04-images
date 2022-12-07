@@ -1,27 +1,36 @@
-export const SearchBar = ({ onSubmit }) => {
-  let value = '';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
-  const onFormSubmit = e => {
-    e.preventDefault();
-    onSubmit(value);
+const SignupSchema = Yup.object().shape({
+  searchValue: Yup.string().required('Enter query'),
+});
+
+export const SearchBar = ({ onSubmit }) => {
+  const handleSubmit = ({ searchValue }, actions) => {
+    console.log(searchValue);
+    onSubmit(searchValue);
   };
   return (
     <header>
-      <form onSubmit={onFormSubmit}>
-        <button type="submit">
-          <span>Search</span>
-        </button>
-
-        <input
-          type="text"
-          autoComplete="off"
-          autoFocus
-          placeholder="Search images and photos"
-          onChange={e => {
-            value = e.target.value.trim();
-          }}
-        />
-      </form>
+      <Formik
+        initialValues={{ searchValue: '' }}
+        validationSchema={SignupSchema}
+        onSubmit={handleSubmit}
+      >
+        <Form>
+          <button type="submit">
+            <span>Search</span>
+          </button>
+          <Field
+            name="searchValue"
+            type="text"
+            autoComplete="off"
+            autoFocus
+            placeholder="Search images and photos"
+          />
+          <ErrorMessage name="searchValue" />
+        </Form>
+      </Formik>
     </header>
   );
 };
