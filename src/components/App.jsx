@@ -3,7 +3,7 @@ import { fetchImagesByName } from './services/API';
 import { GlobalStyles } from './GlobalStyles';
 import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Button } from './Button/Button';
+import { PrimaryButton } from './Button/Button';
 
 export class App extends Component {
   state = {
@@ -48,12 +48,14 @@ export class App extends Component {
     const isShowButton = page !== totalPages;
 
     return (
-      <>
+      <div>
         <GlobalStyles />
         <SearchBar onSubmit={this.getQuery} />
         <ImageGallery gallery={this.state.gallery} />
-        {isShowButton && <Button label="Load more" onClick={this.changePage} />}
-      </>
+        {isShowButton && (
+          <PrimaryButton label="Load more" onClick={this.changePage} />
+        )}
+      </div>
     );
   }
 }

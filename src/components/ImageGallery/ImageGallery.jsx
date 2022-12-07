@@ -1,17 +1,17 @@
-import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
-
+import { Image } from '../Image/Image';
+import { ImageGalleryList, ImageGalleryItem } from './ImageGallery.styles';
 export const ImageGallery = ({ gallery }) => {
   return (
-    <ul>
+    <ImageGalleryList>
       {!!gallery.length &&
         gallery.map(image => {
           const { id } = image;
           return (
-            <li key={id}>
-              <ImageGalleryItem image={image} />
-            </li>
+            <ImageGalleryItem key={id}>
+              <Image image={image} />
+            </ImageGalleryItem>
           );
         })}
-    </ul>
+    </ImageGalleryList>
   );
 };

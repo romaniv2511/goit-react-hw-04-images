@@ -1,36 +1,36 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { Searchbar, SearchForm, Input, SearchButton } from './SearchBar.styles';
+import { FiSearch } from 'react-icons/fi';
 
 const SignupSchema = Yup.object().shape({
-  searchValue: Yup.string().required('Enter query'),
+  searchValue: Yup.string().required('Please enter query'),
 });
 
 export const SearchBar = ({ onSubmit }) => {
   const handleSubmit = ({ searchValue }, actions) => {
-    console.log(searchValue);
     onSubmit(searchValue);
   };
   return (
-    <header>
+    <Searchbar>
       <Formik
         initialValues={{ searchValue: '' }}
         validationSchema={SignupSchema}
         onSubmit={handleSubmit}
       >
-        <Form>
-          <button type="submit">
-            <span>Search</span>
-          </button>
-          <Field
+        <SearchForm>
+          <SearchButton type="submit">
+            <FiSearch />
+          </SearchButton>
+          <Input
             name="searchValue"
             type="text"
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
           />
-          <ErrorMessage name="searchValue" />
-        </Form>
+        </SearchForm>
       </Formik>
-    </header>
+    </Searchbar>
   );
 };
