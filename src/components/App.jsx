@@ -4,6 +4,7 @@ import { GlobalStyles } from './GlobalStyles';
 import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { PrimaryButton } from './Button/Button';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
@@ -11,6 +12,7 @@ export class App extends Component {
     page: 1,
     totalPages: 1,
     gallery: [],
+    isLoading: false,
   };
   componentDidUpdate(_, prevState) {
     if (
@@ -30,6 +32,7 @@ export class App extends Component {
     const { query, page } = this.state;
 
     try {
+      this.setState({ isLoading: true });
       const { data } = await fetchImagesByName(query, page);
       this.setState(state => ({
         gallery: [...state.gallery, ...data.hits],
@@ -37,6 +40,8 @@ export class App extends Component {
       }));
     } catch (error) {
       console.log(error);
+    } finally {
+      this.setState({ isLoading: false });
     }
   };
   changePage = () => {
@@ -44,7 +49,7 @@ export class App extends Component {
   };
 
   render() {
-    const { page, totalPages } = this.state;
+    const { page, totalPages, isLoading } = this.state;
     const isShowButton = page !== totalPages;
 
     return (
@@ -52,6 +57,7 @@ export class App extends Component {
         <GlobalStyles />
         <SearchBar onSubmit={this.getQuery} />
         <ImageGallery gallery={this.state.gallery} />
+        {isLoading && <Loader />}
         {isShowButton && (
           <PrimaryButton label="Load more" onClick={this.changePage} />
         )}
