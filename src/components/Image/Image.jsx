@@ -1,5 +1,4 @@
 import { Img } from './Image.styles';
-export const Image = ({ image }) => {
-  const { largeImageURL, webformatURL, tags } = image;
-  return <Img src={webformatURL} alt={tags} width="300" />;
+export const Image = ({ url, alt }) => {
+  return <Img src={url} alt={alt} />;
 };

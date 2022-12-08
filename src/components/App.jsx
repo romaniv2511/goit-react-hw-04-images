@@ -5,6 +5,7 @@ import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { PrimaryButton } from './Button/Button';
 import { Loader } from './Loader/Loader';
+import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
@@ -13,6 +14,7 @@ export class App extends Component {
     totalPages: 1,
     gallery: [],
     isLoading: false,
+    largeImage: null,
   };
   componentDidUpdate(_, prevState) {
     if (
@@ -21,6 +23,8 @@ export class App extends Component {
     ) {
       this.getImages();
     }
+    console.log(this.state.largeImage);
+    console.log(this.state.gallery);
   }
 
   getQuery = query => {
@@ -34,6 +38,7 @@ export class App extends Component {
     try {
       this.setState({ isLoading: true });
       const { data } = await fetchImagesByName(query, page);
+
       this.setState(state => ({
         gallery: [...state.gallery, ...data.hits],
         totalPages: Math.ceil(data.totalHits / 12),
@@ -47,16 +52,32 @@ export class App extends Component {
   changePage = () => {
     this.setState(state => ({ page: state.page + 1 }));
   };
+  onImgClick = url => {
+    this.setState(state => ({
+      largeImage: url,
+    }));
+  };
+  onModalClose = () => {
+    this.setState({
+      largeImage: '',
+    });
+  };
 
   render() {
-    const { page, totalPages, isLoading } = this.state;
-    const isShowButton = page !== totalPages;
+    const { query, page, totalPages, gallery, isLoading, largeImage } =
+      this.state;
+    const isShowButton = page !== totalPages && gallery.length > 0;
 
     return (
       <div>
         <GlobalStyles />
         <SearchBar onSubmit={this.getQuery} />
-        <ImageGallery gallery={this.state.gallery} />
+        <ImageGallery gallery={gallery} onClick={this.onImgClick} />
+        {largeImage && (
+          <Modal onClose={this.onModalClose}>
+            <img src={largeImage} alt={query} width="600" />
+          </Modal>
+        )}
         {isLoading && <Loader />}
         {isShowButton && (
           <PrimaryButton label="Load more" onClick={this.changePage} />
