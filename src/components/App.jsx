@@ -29,7 +29,7 @@ export class App extends Component {
 
   getQuery = query => {
     if (query !== this.state.query) {
-      this.setState({ query, gallery: [] });
+      this.setState({ query, page: 1, gallery: [] });
     }
   };
   getImages = async () => {
