@@ -1,12 +1,12 @@
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import 'modern-normalize';
 
 export const GlobalStyles = createGlobalStyle`
   html {
     box-sizing: border-box;
-    width: 100vw;
-    overflow-x: hidden;
+    width: 100%;
   }
+
 
   *,
   *::before,
@@ -29,11 +29,14 @@ export const GlobalStyles = createGlobalStyle`
     max-width: 100%;
     height: auto;
   }
-  div {
+
+
+`;
+
+export const AppBox = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   grid-gap: 16px;
   padding-bottom: 24px;
-}
-
+  scrollbar-width: none;
 `;

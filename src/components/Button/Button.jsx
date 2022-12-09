@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Button } from './Button.styled';
 
 export const PrimaryButton = ({ label, onClick }) => (
@@ -5,3 +6,8 @@ export const PrimaryButton = ({ label, onClick }) => (
     {label}
   </Button>
 );
+
+PrimaryButton.propTypes = {
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
