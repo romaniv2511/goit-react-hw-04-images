@@ -81,13 +81,15 @@ export class App extends Component {
       largeImage,
       notification,
     } = this.state;
+
+    const showNotification = !gallery.length && !isLoading;
     const showButton = page !== totalPages && gallery.length > 0;
 
     return (
       <AppBox>
         <GlobalStyles />
         <SearchBar onSubmit={this.getQuery} />
-        {!gallery.length && <Notification msg={notification} />}
+        {showNotification && <Notification msg={notification} />}
         <ImageGallery gallery={gallery} onClick={this.onImgClick} />
         {largeImage && (
           <Modal onClose={this.onModalClose}>
