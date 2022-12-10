@@ -12,5 +12,17 @@ export const fetchImagesByName = async (value, page) => {
     page: `${page}`,
   });
   const response = await axios.get(`/api/?${searchParams}`);
-  return response;
+
+  const { totalHits, hits } = response.data;
+
+  const filtredResponse = {
+    totalPages: Math.ceil(totalHits / 12),
+    hits: hits.map(({ id, largeImageURL, webformatURL, tags }) => ({
+      id,
+      largeImageURL,
+      webformatURL,
+      tags,
+    })),
+  };
+  return filtredResponse;
 };

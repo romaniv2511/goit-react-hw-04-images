@@ -25,11 +25,13 @@ export class App extends Component {
     ) {
       this.getImages();
     }
+    // console.log(this.state.page);
+    // console.log(this.state.totalPages);
   }
 
   getQuery = query => {
     if (query !== this.state.query) {
-      this.setState({ query, page: 1, gallery: [] });
+      this.setState({ query, page: 1, totalPages: 1, gallery: [] });
     }
   };
   getImages = async () => {
@@ -37,16 +39,16 @@ export class App extends Component {
 
     try {
       this.setState({ isLoading: true });
-      const { data } = await fetchImagesByName(query, page);
-      if (!data.total) {
+      const { totalPages, hits } = await fetchImagesByName(query, page);
+      if (!totalPages) {
         this.setState({
           notification: `Your search "${this.state.query}" match nothing. Try a new keyword`,
         });
         return;
       }
       this.setState(state => ({
-        gallery: [...state.gallery, ...data.hits],
-        totalPages: Math.ceil(data.totalHits / 12),
+        gallery: [...state.gallery, ...hits],
+        totalPages,
       }));
     } catch (error) {
       this.setState({
@@ -83,7 +85,7 @@ export class App extends Component {
     } = this.state;
 
     const showNotification = !gallery.length && !isLoading;
-    const showButton = page !== totalPages && gallery.length > 0;
+    const showButton = page < totalPages;
 
     return (
       <AppBox>
