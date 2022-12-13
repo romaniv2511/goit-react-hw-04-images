@@ -25,8 +25,6 @@ export class App extends Component {
     ) {
       this.getImages();
     }
-    // console.log(this.state.page);
-    // console.log(this.state.totalPages);
   }
 
   getQuery = query => {
