@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchImagesByName } from './services/API';
 import { GlobalStyles, AppBox } from './GlobalStyles';
 import { SearchBar } from './SearchBar/SearchBar';
@@ -8,99 +8,74 @@ import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
 import { Notification } from './Notification/Notification';
 
-export class App extends Component {
-  state = {
-    query: '',
-    page: 1,
-    totalPages: 1,
-    gallery: [],
-    isLoading: false,
-    largeImage: null,
-    notification: 'Enter keyword',
-  };
-  componentDidUpdate(_, prevState) {
-    if (
-      prevState.query !== this.state.query ||
-      prevState.page !== this.state.page
-    ) {
-      this.getImages();
-    }
-  }
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [gallery, setGallery] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [largeImage, setLargeImage] = useState(null);
+  const [notification, setNotification] = useState('Enter keyword');
 
-  getQuery = query => {
-    if (query !== this.state.query) {
-      this.setState({ query, page: 1, totalPages: 1, gallery: [] });
-    }
-  };
-  getImages = async () => {
-    const { query, page } = this.state;
+  const showNotification = !gallery.length && !isLoading;
+  const showButton = currentPage < totalPages;
 
-    try {
-      this.setState({ isLoading: true });
-      const { totalPages, hits } = await fetchImagesByName(query, page);
-      if (!totalPages) {
-        this.setState({
-          notification: `Your search "${this.state.query}" match nothing. Try a new keyword`,
-        });
-        return;
-      }
-      this.setState(state => ({
-        gallery: [...state.gallery, ...hits],
-        totalPages,
-      }));
-    } catch (error) {
-      this.setState({
-        notification: 'Oops, something went wrong.',
-      });
-      console.log(error.message);
-    } finally {
-      this.setState({ isLoading: false });
+  useEffect(() => {
+    if (!query) {
+      return;
+    }
+    setIsLoading(true);
+
+    fetchImagesByName(query, currentPage)
+      .then(({ totalPages, hits }) => {
+        if (!totalPages) {
+          setNotification(
+            `Your search "${query}" match nothing. Try a new keyword`
+          );
+          return;
+        }
+        setGallery(prev => [...prev, ...hits]);
+        setTotalPages(totalPages);
+      })
+      .catch(error => {
+        setNotification('Oops, something went wrong.');
+        console.log(error.message);
+      })
+      .finally(() => setIsLoading(false));
+  }, [query, currentPage]);
+
+  const getQuery = newQuery => {
+    if (newQuery !== query) {
+      setQuery(newQuery);
+      setCurrentPage(1);
+      setTotalPages(1);
+      setGallery([]);
     }
   };
-  changePage = () => {
-    this.setState(state => ({ page: state.page + 1 }));
+
+  const changePage = () => {
+    setCurrentPage(prev => prev + 1);
   };
-  onImgClick = url => {
-    this.setState(state => ({
-      largeImage: url,
-    }));
+  const onImgClick = url => {
+    setLargeImage(url);
   };
-  onModalClose = () => {
-    this.setState({
-      largeImage: '',
-    });
+  const onModalClose = () => {
+    setLargeImage('');
   };
 
-  render() {
-    const {
-      query,
-      page,
-      totalPages,
-      gallery,
-      isLoading,
-      largeImage,
-      notification,
-    } = this.state;
-
-    const showNotification = !gallery.length && !isLoading;
-    const showButton = page < totalPages;
-
-    return (
-      <AppBox>
-        <GlobalStyles />
-        <SearchBar onSubmit={this.getQuery} />
-        {showNotification && <Notification msg={notification} />}
-        <ImageGallery gallery={gallery} onClick={this.onImgClick} />
-        {largeImage && (
-          <Modal onClose={this.onModalClose}>
-            <img src={largeImage} alt={query} width="600" />
-          </Modal>
-        )}
-        {isLoading && <Loader />}
-        {showButton && (
-          <PrimaryButton label="Load more" onClick={this.changePage} />
-        )}
-      </AppBox>
-    );
-  }
-}
+  return (
+    <AppBox>
+      <GlobalStyles />
+      <SearchBar onSubmit={getQuery} />
+      {showNotification && <Notification msg={notification} />}
+      <ImageGallery gallery={gallery} onClick={onImgClick} />
+      {largeImage && (
+        <Modal onClose={onModalClose}>
+          <img src={largeImage} alt={query} width="600" />
+        </Modal>
+      )}
+      {isLoading && <Loader />}
+      {showButton && <PrimaryButton label="Load more" onClick={changePage} />}
+    </AppBox>
+  );
+};
